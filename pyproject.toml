@@ -11,5 +11,9 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP"]
 
+[tool.ruff.lint.per-file-ignores]
+# файлы миграций генерирует Alembic
+"app/migrations/versions/*" = ["E501", "UP", "W291"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

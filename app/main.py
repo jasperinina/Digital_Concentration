@@ -1,20 +1,25 @@
 import sys
 
-from PySide6.QtWidgets import QApplication, QLabel, QMainWindow, QTabWidget
+from PySide6.QtWidgets import QApplication, QMessageBox
+
+from app.core.db import default_db_path, init_db
+from app.core.main_window import APP_TITLE, MainWindow
 
 
 def main() -> int:
     app = QApplication(sys.argv)
+    app.setApplicationName("NormDev")
 
-    window = QMainWindow()
-    window.setWindowTitle("NormDev — учет времени и концентрация")
-    tabs = QTabWidget()
-    tabs.addTab(QLabel("Подсистема учета времени (Закусилов Д.)"), "Учет времени")
-    tabs.addTab(QLabel("Подсистема цифровой концентрации (Григорьева А.)"), "Концентрация")
-    window.setCentralWidget(tabs)
-    window.resize(900, 600)
+    try:
+        session_factory = init_db()
+    except Exception as exc:  # без БД приложение работать не может
+        QMessageBox.critical(
+            None, APP_TITLE, f"Не удалось открыть базу данных:\n{default_db_path()}\n\n{exc}"
+        )
+        return 1
+
+    window = MainWindow(session_factory)
     window.show()
-
     return app.exec()
 
 
